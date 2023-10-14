@@ -87,9 +87,8 @@ def borrarPersonal(lstPersonal, rutaFile):
 
 def modificarpersonal(lstPersonal,rutaFile):
 
-    global idempl
+    
     print("\n\nModificar empleado\n")
-    idempl = agregarPersonal(lstPersonal,ruta=True)
     buscar = guardarEmpleado(lstPersonal,rutaFile)
     if buscar == -1 or buscar == "":
         print("El codigo no existe.")
