@@ -72,27 +72,83 @@ def mayoromenor(diclibro):
 def listamayoromenor(rutaFile):
     lista = sorted(rutaFile,key=mayoromenor)
     print(lista) 
-    return 
-    
 
+def borrarlibro(lstlibros,rutaFile):
+    print("\n\nBorrar Libro\n")
+    codigo = int(input("Ingrese el codigo: "))
+    if existecodigo(codigo, lstlibros) == -1:
+        print("No existe un libro con este codigo")
+        input("Presione cualquier tecla para continuar\n")
+
+    for i in range(len(lstlibros)):
+        datos = lstlibros[i]
+        k = int(list(datos.keys())[0])
+        if k == codigo:
+            del lstlibros[i]
+            break
+    
+def nombreslibro(lstlibros):
+    while True:
+        try:
+            dato = int(input(lstlibros))
+            break
+        except ValueError:
+            print(lstlibros, "debe ser algo valido.")
+        return dato
+
+def ordenamiento_nombre(diclibro,titulo):
+    for j in range(diclibro): 
+        if lstlibros[j][titulo]>lstlibros[j+1][titulo]:
+            print(j)
+
+def editarlibro(lstlibros):
+    print("\n\nModificar libro\n")
+    codigo = int(input("Ingrese el codigo del libro: "))
+    if existecodigo(codigo,lstlibros) == -1:
+        print("No existe un libro con este codigo.")
+        input("Presione cualquier tecla para continuar\n")
+        return None
+    
+    buscar = guardarlibro(lstlibros,rutaFile)
+    if buscar == -1 or buscar == "":
+        print("El codigo del libro no existe")
+        input()
+        return
+    print("\n")
+    while True:
+        editar = int(input("\n1.Titulo\n2.Autor\n3.Precio\n"))
+        if editar <1 or editar >3:
+            print("hubo un error, debido a que debes ingresar un numero valido entre 1 o 3.")
+            input()
+        elif editar == 1:
+            print("Que titulo desea ponerle a su libro?: ")
+        elif editar == 2:
+            print("Quien es el autor entonces?: ")
+        elif editar == 3:
+            print("Que tanto cuesta tu libro ahora?: ") 
+            continue
+        break
 
 def menu():
     while True:
         try:
             print("\n"* 30)
-            print("||| REGRISTRO LIBRO |||".center(40))
+            print("||| REGISTRO LIBRO |||".center(40))
             print("MENU".center(40))
             print("1.Insertar")
             print("2.Consultar")
-            print("3.Salir")
-            opcion = int(input("Opcion (1,3)?: "))
-            if opcion < 1 or opcion > 3:
-                print("Opcion no valida. Escoja de 1 a 3.")
+            print("3.Editar Libro")
+            print("4.Borrar Libro")
+            print("5.Ordenamiento libros")
+            print("6.Salir")
+            opcion = int(input("Opcion (1,6?: "))
+            if opcion < 1 or opcion > 6:
+                print("Opcion no valida. Escoja de 1 a 6.")
                 input("Presione cualquier tecla para continuar...")
                 continue
             return opcion
         except ValueError:
-            print("Opcion no valida. Escoja de 1 a 3.")
+            print("Opcion no valida. Escoja de 1 a 6.")
             input("Presione cualquier tecla para continuar...")
 def cargarinfo(lstlibros,ruta):
     try:
@@ -139,6 +195,12 @@ while True:
         agregarlibro(lstlibros,rutaFile)
     elif op == 2:
         listamayoromenor(lstlibros)
+    elif op == 3:
+        editarlibro(lstlibros)
+    elif op == 4:
+        borrarlibro(lstlibros,rutaFile)
+    elif op == 5:
+        ordenamiento_nombre(nombreslibro,rutaFile)
     else:
         print("\nGracias por usar el progama")
         break
