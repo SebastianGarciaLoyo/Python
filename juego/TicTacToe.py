@@ -1,166 +1,93 @@
-#Diseñar un progama en el que se pueda jugar tictactoe y tambien mostrar una tabla en el que salgan los mejores.
 import json
+import time
 
-def guardarlibro(lstjugador,ruta):
-
-    try:
-        fd = open(ruta,"w")
-    except Exception as l:
-        print("Error al abrir el archivo para guardar tu libro.\n", l)
-        input("Presione cualquier tecla para continuar\n")
-        return False
-    
-    try:
-        json.dump(lstjugador,fd)
-    except Exception as l:
-        print("Error al guardar la informacion del libro.\n", l)
-        input("Presione cualquier tecla para continuar\n")
-        return False
-    
-    try:
-        if not fd.closed:
-            fd.close()
-    except Exception as l:
-        print("Error al cerrar el archivo.")
-        input("Presione cualquier tecla pra continuar\n")
-        return False
-    
-    return True
-
-def existecodigo(nombre,lstjugador):
-    
-    for i, datos in enumerate(lstjugador):
-    
-        k = (list(datos.keys())[0])
-        if k == nombre:
-            return i
-    return -1
-
-def agregarjugador(lstjugador,ruta):
-    print("\n\n1. Agregar Libro")
-
-    nombre = int(input("Ingrese el CODIGO: "))
-    while existecodigo(nombre,lstjugador) != -1:
-        print("--> Ya existe un libro con este codigo")
-        input("Presione cualquier tecla para continuar\n")
-        nombre = (input("\nIngrese el Nombre again...: "))
-    
-    idjugador = (input("Nombre: "))
-    
-
-    dicnombre = {}
-    dicnombre[nombre] = {"Nombre": idjugador,}
-    lstjugador.append(dicnombre)
-
-    if guardarlibro(lstjugador,ruta) == True:
-        input("El Nombre ha sido registrado con exito.\nPresione cualquier tecla para continuar")
-    else:
-        input("Ocurrio algun error al guardar el nombre.")
-
-
-
-
-def tabla(tablero):
+def imprimir_tablero(tablero):
     for fila in tablero:
-        print(" | ".join(fila))
-        print("---"*len(fila))
+        print("|".join(fila))
+        print("-" * 5)
 
-
-def ganador(tablero,jugador):
+def revisar_ganador(tablero, jugador):
     for fila in tablero:
-        if all(casilla == jugador for casilla in fila):
+        if all([casilla == jugador for casilla in fila]):
             return True
-    
-    for col in range(len(tablero[0])):
-        if all(tablero[fila][col]== jugador for fila in range(len(tablero))):
+    for col in range(3):
+        if all([tablero[fila][col] == jugador for fila in range(3)]):
             return True
-    
-    if all(tablero[i][i]== jugador for i in range(len(tablero))) or \
-        all(tablero[i][len(tablero)-1-i] == jugador for i in range(len(tablero))):
+    if all([tablero[i][i] == jugador for i in range(3)]) or all([tablero[i][2 - i] == jugador for i in range(3)]):
         return True
     return False
 
-def jugartictactoe(idjugador):
-    tablero = [[" "for _ in range(3)]for _ in range(3)]
-    jugador = "X"
-    nombre = input("Ingrese su nombre: ")
-    nombre2 = input("Ingrese su nombre tambien: ")
-    while True:
-        tabla(tablero)
-        fila = int(input(f"{nombre} {jugador}, elige una fila (0,1,2): "))
-        col = int(input(f"{nombre} {jugador}, elige una columna (0,1,2):"))
+def actualizar_tabla_de_puntuaciones(archivo, ganador, movimientos, tiempo_transcurrido):
+    with open(archivo, 'r') as f:
+        tabla_de_puntuaciones = json.load(f)
+        tabla_de_puntuaciones.append({"jugador": ganador, "movimientos": movimientos, "tiempo": tiempo_transcurrido})
+        tabla_de_puntuaciones.sort(key=lambda x: (x["movimientos"], x["tiempo"]))
+    with open(archivo, 'w') as f:
+        json.dump(tabla_de_puntuaciones, f)
 
-        if 0 <= fila < 3 and 0 <= col <3 and tablero[fila][col] == " ":
-            tablero[fila][col] = jugador
-            if ganador(tablero,jugador):
-                tabla(tablero)
-                print(f"Jugador {jugador} ha ganado!")
+def mostrar_tabla_de_puntuaciones(archivo):
+    with open(archivo, 'r') as f:
+        tabla_de_puntuaciones = json.load(f)
+        print("Tabla de Puntuaciones:")
+        print("Jugador\tMovimientos\tTiempo")
+        for i, item in enumerate(tabla_de_puntuaciones):
+            print(f"{i + 1}. {item['jugador']}\t{item['movimientos']}\t{item['tiempo']}")
+
+def tres_en_raya():
+    archivo = 'puntuaciones.json'
+    with open(archivo, 'w') as f:
+        json.dump([], f)
+    while True:
+        tablero = [[' '] * 3 for _ in range(3)]
+        print("¡Bienvenido a Tres en Raya!")
+        jugador1 = input("Ingresa el nombre para el Jugador 1: ")
+        jugador2 = input("Ingresa el nombre para el Jugador 2: ")
+        marcador_j1 = input(f"{jugador1}, elige tu ficha 'X' o 'O': ").upper()
+        marcador_j2 = 'X' if marcador_j1 == 'O' else 'O'
+        print(f"{jugador1} jugará con {marcador_j1} y {jugador2} jugará con {marcador_j2}.")
+
+        movimientos = 0
+        tiempo_inicio = time.time()
+        while True:
+            imprimir_tablero(tablero)
+            jugador = jugador1 if movimientos % 2 == 0 else jugador2
+            marcador = marcador_j1 if movimientos % 2 == 0 else marcador_j2
+            print(f"Turno de {jugador}.")
+            while True:
+                try:
+                    x, y = map(int, input("Ingresa el número de fila y columna (índice de 0) separados por espacio: ").split())
+                    if tablero[x][y] == ' ':
+                        tablero[x][y] = marcador
+                        break
+                    else:
+                        print("Esta posición ya está ocupada. Inténtalo de nuevo.")
+                except ValueError:
+                    print("Entrada no válida. Inténtalo de nuevo.")
+                except IndexError:
+                    print("Posición no válida. Inténtalo de nuevo.")
+
+            if revisar_ganador(tablero, marcador):
+                imprimir_tablero(tablero)
+                print(f"¡Felicidades! ¡{jugador} ha ganado!")
+                tiempo_fin = time.time()
+                tiempo_transcurrido = round(tiempo_fin - tiempo_inicio, 2)
+                actualizar_tabla_de_puntuaciones(archivo, jugador, movimientos, tiempo_transcurrido)
                 break
-            
-            elif " " not in [casilla for fila in tablero for casilla in fila]:
-                tabla(tablero)
-                print("El juego termino en un empate :(")
-            jugador = "X" if jugador == "O" else "O"
-        else:
-            print("Error,Movimiento no valido. Intente de nuevo.")
+            movimientos += 1
 
+            if movimientos == 9:
+                imprimir_tablero(tablero)
+                print("¡Es un empate!")
+                break
 
-#Comienza la diversion :D
-def menu():
-    while True:
-        try:
-            print("*** Menu del juego ***")
-            print("1.Agregar Jugador")
-            print("2. Jugar!")
-            print("3.Tabla de clasificacion")
-            print("4.Salir")
-            opcion = int(input("Opcion (1-4)? "))
-            if opcion <1 or opcion >4:
-                print("Opcion no valida. Escoja de 1 a 4.")
-                input("Presione cualquier tecla para continuar...")
-                continue
-            return opcion
-        except ValueError:
-            print("Opcion no valida. Escoja de 1 a 4.")
-            input("Presione cualquier tecla para continuar...")
-def cargarinfo(lstjugador,ruta):
-    try:
-        fd = open(ruta,"r")
-    except Exception as e:
-        try:
-            fd = open(ruta,"w")
-        except Exception as d:
-            print("Error al intentar abrir el archivo")
-            input("Presione cualquier teclas para continuar")
-        return None
-    try:
-        linea = fd.readline()
-        if linea.strip() !="":
-            fd.seek(0)
-            lstjugador = json.load(fd)
-        else:
-            lstjugador = []
-    except Exception as l:
-        print("Error al cerrar el archivo.\n", l,"\n")
-        input("Presione cualquier tecla para continuar\n")
-        return None
-    return lstjugador
+        mostrar_tabla_de_puntuaciones(archivo)
 
-#progama json
-rutaFile = "juego/tabla.json"
-lstjugador = []
-lstjugador = cargarinfo(lstjugador,rutaFile)
-while True:
-    op = menu()
-    if op == 1:
-        agregarjugador(lstjugador,rutaFile)
-    elif op == 2:
-        jugartictactoe(lstjugador)
-    elif op == 3:
-        pass
-    else:
-        print("Gracias por jugar :D ")
-        break
+        jugar_nuevamente = input("¿Quieres jugar de nuevo? (sí/no): ").lower()
+        if jugar_nuevamente != 'sí':
+            print("¡Gracias por jugar a Tres en Raya!")
+            break
 
+if __name__ == "__main__":
+    tres_en_raya()
 
-
+    
