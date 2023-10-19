@@ -34,7 +34,7 @@ def mostrar_tabla_de_puntuaciones(archivo):
             print(f"{i + 1}. {item['jugador']}\t{item['movimientos']}\t{item['tiempo']}")
 
 def tres_en_raya():
-    archivo = 'puntuaciones.json'
+    archivo = 'juego/puntuaciones.json'
     with open(archivo, 'w') as f:
         json.dump([], f)
     while True:
@@ -87,7 +87,34 @@ def tres_en_raya():
             print("¡Gracias por jugar a Tres en Raya!")
             break
 
-if __name__ == "__main__":
-    tres_en_raya()
 
-    
+
+def menu():
+    while True:
+        try:
+            print("*** Menu TicTacToe ***")
+            print("1.Jugar!")
+            print("2.Tabla de clasificacion")
+            print("3.Salir")
+            op = int(input("Eliga una opcion (1-3)"))
+            if op < 1 or op >6:
+                print("Opcion no valida. Escoja de 1 a 3.")
+                input("Presione cualquier tecla para continuar...")
+                continue
+            return op
+        except ValueError:
+            print("Opcion no valida. Escoja de 1 a 3.")
+            input("Presione cualquier tecla para continuar...")
+
+## hola.
+archivo = "juego/puntuaciones.json"
+while True:
+    op = menu()
+    if op == 1:
+        if __name__ == "__main__":
+            tres_en_raya()
+    elif op == 2:
+        mostrar_tabla_de_puntuaciones(archivo)
+    else:
+        print("Gracias por jugar :D!")
+        break
