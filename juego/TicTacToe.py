@@ -18,10 +18,14 @@ def revisar_ganador(tablero, jugador):
     return False
 #SI llegado al caso el jugador que gane reemplaza al anterior que gano
 def actualizar_tabla_de_puntuaciones(archivo, ganador, movimientos, tiempo_transcurrido):
-    with open(archivo, 'r') as f:
-        tabla_de_puntuaciones = json.load(f)
-        tabla_de_puntuaciones.append({"jugador": ganador, "movimientos": movimientos, "tiempo": tiempo_transcurrido})
-        tabla_de_puntuaciones.sort(key=lambda x: (x["movimientos"], x["tiempo"]))
+    try:
+        with open(archivo, 'r') as f:
+            tabla_de_puntuaciones = json.load(f)
+    except FileNotFoundError:
+        tabla_de_puntuaciones = []
+
+    tabla_de_puntuaciones.append({"jugador": ganador, "movimientos": movimientos, "tiempo": tiempo_transcurrido})
+
     with open(archivo, 'w') as f:
         json.dump(tabla_de_puntuaciones, f)
 #Tabla de solo los jugadores que ganaron
