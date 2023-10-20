@@ -1,11 +1,11 @@
 import json
 import time
-
+#Imprime el tablero del juego
 def imprimir_tablero(tablero):
     for fila in tablero:
         print("|".join(fila))
         print("-" * 5)
-
+#funcion para revisar si alguien gano
 def revisar_ganador(tablero, jugador):
     for fila in tablero:
         if all([casilla == jugador for casilla in fila]):
@@ -16,7 +16,7 @@ def revisar_ganador(tablero, jugador):
     if all([tablero[i][i] == jugador for i in range(3)]) or all([tablero[i][2 - i] == jugador for i in range(3)]):
         return True
     return False
-
+#SI llegado al caso el jugador que gane reemplaza al anterior que gano
 def actualizar_tabla_de_puntuaciones(archivo, ganador, movimientos, tiempo_transcurrido):
     with open(archivo, 'r') as f:
         tabla_de_puntuaciones = json.load(f)
@@ -24,7 +24,7 @@ def actualizar_tabla_de_puntuaciones(archivo, ganador, movimientos, tiempo_trans
         tabla_de_puntuaciones.sort(key=lambda x: (x["movimientos"], x["tiempo"]))
     with open(archivo, 'w') as f:
         json.dump(tabla_de_puntuaciones, f)
-
+#Tabla de solo los jugadores que ganaron
 def mostrar_tabla_de_puntuaciones(archivo):
     with open(archivo, 'r') as f:
         tabla_de_puntuaciones = json.load(f)
@@ -32,7 +32,7 @@ def mostrar_tabla_de_puntuaciones(archivo):
         print("Jugador\tMovimientos\tTiempo")
         for i, item in enumerate(tabla_de_puntuaciones):
             print(f"{i + 1}. {item['jugador']}\t{item['movimientos']}\t{item['tiempo']}")
-
+#Progama del juego
 def tres_en_raya():
     archivo = 'juego/puntuaciones.json'
     with open(archivo, 'w') as f:
@@ -68,7 +68,7 @@ def tres_en_raya():
 
             if revisar_ganador(tablero, marcador):
                 imprimir_tablero(tablero)
-                print(f"¡Felicidades! ¡{jugador} ha ganado!")
+                print(f"¡Felicidades! ¡{jugador} ha ganado! ＼(^-^)／")
                 tiempo_fin = time.time()
                 tiempo_transcurrido = round(tiempo_fin - tiempo_inicio, 2)
                 actualizar_tabla_de_puntuaciones(archivo, jugador, movimientos, tiempo_transcurrido)
@@ -77,14 +77,14 @@ def tres_en_raya():
 
             if movimientos == 9:
                 imprimir_tablero(tablero)
-                print("¡Es un empate!")
+                print("Es un empate suerte para la proxima ヽ(ヅ)ノ")
                 break
 
         mostrar_tabla_de_puntuaciones(archivo)
 
         jugar_nuevamente = input("¿Quieres jugar de nuevo? (sí/no): ").lower()
         if jugar_nuevamente != 'sí':
-            print("¡Gracias por jugar a Tres en Raya!")
+            print("¡Gracias por jugar a Tres en Raya! ヘ(^_^ヘ)")
             break
 
 
@@ -92,12 +92,15 @@ def tres_en_raya():
 def menu():
     while True:
         try:
-            print("*** Menu TicTacToe ***")
-            print("1.Jugar!")
-            print("2.Tabla de clasificacion")
-            print("3.Salir")
+            print("\n╔════════════════════════════════╗")
+            print("║     ✨Menu TicTacToe✨         ║")
+            print("╠════════════════════════════════╣")
+            print("║ 1.Quieres jugar?               ║")
+            print("║ 2.Tabla de clasificacion       ║")
+            print("║ 3.Salir                        ║")
+            print("╠════════════════════════════════╣")
             op = int(input("Eliga una opcion (1-3)"))
-            if op < 1 or op >6:
+            if op < 1 or op >3:
                 print("Opcion no valida. Escoja de 1 a 3.")
                 input("Presione cualquier tecla para continuar...")
                 continue
@@ -106,7 +109,7 @@ def menu():
             print("Opcion no valida. Escoja de 1 a 3.")
             input("Presione cualquier tecla para continuar...")
 
-## hola.
+## MENU
 archivo = "juego/puntuaciones.json"
 while True:
     op = menu()
