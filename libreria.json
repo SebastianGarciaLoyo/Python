@@ -1,0 +1,14 @@
+[
+    {
+        "codigo": "2",
+        "titulo": "bomba",
+        "autor": "faker",
+        "precio": "1500"
+    },
+    {
+        "codigo": "1",
+        "titulo": "hola",
+        "autor": "segalo",
+        "precio": "1400"
+    }
+]
